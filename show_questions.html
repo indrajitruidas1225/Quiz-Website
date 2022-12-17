@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Quiz</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.6.0.js" integrity="sha256-H+K7U5CnXl1h5ywQfKtSj8PCmoN9aaq30gDh27Xc0jk=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="style.css">
+  </head>
+  <script>
+    $(document).ready(function(){
+        var url_string=window.location.href
+        var url=new URL(url_string)
+        var subject=url.searchParams.get('sub')
+        var type=url.searchParams.get('type')
+        var name=url.searchParams.get('name')
+        //alert(type)
+
+        u1="https://opentdb.com/api.php?amount=10&category="+subject
+        u2="&type="+type
+        u3=u1+u2
+        //alert(u3)
+        //alert(u1+u2)
+        $.ajax({
+          url:u3,
+          method:'GET',
+          success:function(data){
+            //window.location.href="show_questions.html?data="+data
+            console.log(data)
+            result=data.results
+            for(var i=0;i<10;i++){
+              var question=result[i].question
+              const option=[]
+              option.push(result[i].correct_answer)
+              //option.push(result[i].correct_answer)
+              for(var j=0;j<result[i].incorrect_answers.length;j++){
+                option.push(result[i].incorrect_answers[j])
+
+              }
+              //for(var k=0;k<option.length;k++){
+                //console.log(option)
+
+              //}
+              if(type=='multiple'){
+                $('#question_card').append(`<div class="card mt-3 mb-2" id="options">
+                    <div class="card-body">
+                        <p>`+question+`</p>
+                        <input type="radio"    value=`+option[0]+`>&nbsp&nbsp`+option[0]+`<br>
+                        <input type="radio"    value=`+option[1]+`>&nbsp&nbsp`+option[1]+`<br>
+                        <input type="radio"    value=`+option[2]+`>&nbsp&nbsp`+option[2]+`<br>
+                        <input type="radio"    value=`+option[3]+`>&nbsp&nbsp`+option[3]+`<br>
+                    </div>
+                </div>`)
+              }
+              if(type=="boolean"){
+                $('#question_card').append(`<div class="card mt-3 mb-2">
+                    <div class="card-body" id="options">
+                        <p>`+question+`</p>
+                        <input type="radio"  value="True">    True<br>
+                        <input type="radio"  value="False">   False<br>
+                        
+                    </div>
+                </div>`)
+              }
+              
+            }
+          },
+          error:function(error){
+            console.log(url)
+            console.log(error)
+          }
+        })
+        // $('#options input').on('change',function(){
+        //     var ans=$("[type='radio']:checked").val()
+        //     console.log(ans)
+        //   })
+        $('#submit-btn').click(function(){
+          //console.log($('#html').val())
+          $('#options input').on('change',function(){
+            var ans=$("[type='radio']:checked").val()
+            alert(ans)
+          })
+        })
+    })
+  </script>
+  <body class="bg-container">
+    <div class="bg-nav">
+        <h1 class="text-white mb-2" style="text-align:center;font-family:Times;font-size: 70px;">Quiz</h1>
+    </div>
+    <div>
+        <h3 class="ml-5 mt-3">Answer These Questions</h3>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12" id="question_card">
+                
+            </div>
+        </div>
+    </div>
+    <div style="text-align:center" class="p-4">
+      <button id="submit-btn" class="btn btn-lg btn-color text-white">Submit</button>
+    </div>
+  </body>
