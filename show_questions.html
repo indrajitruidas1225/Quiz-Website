@@ -16,41 +16,37 @@
         var subject=url.searchParams.get('sub')
         var type=url.searchParams.get('type')
         var name=url.searchParams.get('name')
-        //alert(type)
-
+        var correctAns=new Array();
+        var all_options=new Array();
+        var q=[]
         u1="https://opentdb.com/api.php?amount=10&category="+subject
         u2="&type="+type
         u3=u1+u2
-        //alert(u3)
-        //alert(u1+u2)
         $.ajax({
           url:u3,
           method:'GET',
           success:function(data){
-            //window.location.href="show_questions.html?data="+data
             console.log(data)
             result=data.results
             for(var i=0;i<10;i++){
               var question=result[i].question
               const option=[]
+              q.push(question);
               option.push(result[i].correct_answer)
-              //option.push(result[i].correct_answer)
+              correctAns.push(result[i].correct_answer);
               for(var j=0;j<result[i].incorrect_answers.length;j++){
                 option.push(result[i].incorrect_answers[j])
 
               }
-              //for(var k=0;k<option.length;k++){
-                //console.log(option)
-
-              //}
+              all_options.push(option)
               if(type=='multiple'){
                 $('#question_card').append(`<div class="card mt-3 mb-2" id="options">
                     <div class="card-body">
                         <p>`+question+`</p>
-                        <input type="radio"    value=`+option[0]+`>&nbsp&nbsp`+option[0]+`<br>
-                        <input type="radio"    value=`+option[1]+`>&nbsp&nbsp`+option[1]+`<br>
-                        <input type="radio"    value=`+option[2]+`>&nbsp&nbsp`+option[2]+`<br>
-                        <input type="radio"    value=`+option[3]+`>&nbsp&nbsp`+option[3]+`<br>
+                        <input type="radio"  value="`+option[0]+`">&nbsp&nbsp`+option[0]+`<br>
+                        <input type="radio"  value="`+option[1]+`">&nbsp&nbsp`+option[1]+`<br>
+                        <input type="radio"  value="`+option[2]+`">&nbsp&nbsp`+option[2]+`<br>
+                        <input type="radio"  value="`+option[3]+`">&nbsp&nbsp`+option[3]+`<br>
                     </div>
                 </div>`)
               }
@@ -72,18 +68,44 @@
             console.log(error)
           }
         })
-        // $('#options input').on('change',function(){
-        //     var ans=$("[type='radio']:checked").val()
-        //     console.log(ans)
-        //   })
-        $('#submit-btn').click(function(){
-          //console.log($('#html').val())
-          $('#options input').on('change',function(){
-            var ans=$("[type='radio']:checked").val()
-            alert(ans)
-          })
-        })
-    })
+        
+        $('#submit-btn').click(function() {
+          //alert(getChecklistItems());
+          var userAns=getChecklistItems();
+          // alert(userAns)
+          // alert(correctAns)
+          var score=0;
+          for(var i=0;i<correctAns.length;i++){
+            if(correctAns[i]==userAns[i])
+              score++;
+          }
+          //alert(score);
+          var user=JSON.stringify(userAns)
+          var correct=JSON.stringify(correctAns)
+          var all=JSON.stringify(all_options);
+          //alert(temp)
+          //var t1=JSON.parse(temp)
+          //alert(t1)
+          u1="show_result.html?score="+score
+          u2="&name="+name
+          u3="&userans="+user
+          u4="&correct="+correct
+          u5="&all="+all
+          u6="&q="+q
+          u7=u1+u2+u3+u4+u5+u6
+          window.location.href=u7
+      });
+
+        function getChecklistItems() {
+          var result = $("input:radio:checked").get();
+          
+          var data = $.map(result, function(element) {
+            //alert(result)
+          return $(element).val();
+    });
+    //var arr = $.makeArray( data );
+      return data;
+    }})
   </script>
   <body class="bg-container">
     <div class="bg-nav">
